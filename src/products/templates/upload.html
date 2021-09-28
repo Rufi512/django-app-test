@@ -1,0 +1,108 @@
+{%extends 'index.html'%}
+{%block extra_head%}
+<style>
+    .col-md-6 .form-label{width: 100%;
+    background: #0663ecd1;
+    color: white;
+    border-radius: 2px;
+    /* margin: 0; */
+    padding: 2px 5px;
+    font-weight: 700;
+}
+</style>
+{%endblock extra_head%}
+{%block content%}
+<form id="form_product" class="container-fluid" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">{%if not type %}Register Product {%else%} Modify Product {%endif%}</h4>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6 p-4">
+                    <label for="id_title" class="form-label">Title Product</label>
+                    {{form.title}}
+                </div>
+                <div class="col-md-6 p-4">
+                    <label for="id_price" class="form-label">Price Product</label>
+                    {{form.price}}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" style="margin: auto;">
+            <div class="row">
+                <div class="col-md-6 p-4">
+                    <label for="id_image" style="display:flex; flex-direction: column; cursor:pointer"><span class="form-label">Image from upload</span>
+                        <img id="image-upload" style="width:270px; display: none; margin:auto; box-shadow: 0px 5px 8px 5px #e6e6e6f5;" src="" alt="image-to-upload">
+                    </label>
+                    {{form.image}}
+                </div>
+                <div class="col-md-6 p-4">
+                    <label for="id_description" class="form-label">Description Product</label>
+                    {{form.description}}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" style="display: flex; justify-content: space-around;">
+            <div class="form-check">
+                {{form.avalaible}}
+                <label class="form-check-label" for="id_avalaible" class="form-label">Avalaible to sell?</label>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+window.addEventListener("load", () => {
+
+    const form = document.getElementById("form_product").querySelectorAll("input, textarea")
+
+
+    Array.from(form).forEach((el) => {
+        if (el.type == 'textarea' || el.type == 'text' || el.type == 'number' || el.type == 'file') {
+            return el.classList.add('form-control')
+        }
+
+        if (el.type == 'checkbox') {
+            return el.classList.add('form-check-input')
+        }
+    })
+
+    {% if product_modify %}
+    const preview_image = document.getElementById("image-upload")
+    const imageProduct = "{{product_modify.image}}"
+    const avalaible = "{{product_modify.avalaible}}"
+    document.getElementById("id_title").value = "{{product_modify.title}}"
+    document.getElementById("id_price").value = "{{product_modify.price}}"
+    document.getElementById("id_description").value = "{{product_modify.description}}"
+    if (imageProduct) {
+        preview_image.style.display = 'flex'
+        preview_image.src = "/media/{{product_modify.image}}"
+    }
+    if (avalaible !== "False") {
+        document.getElementById("id_avalaible").checked = true
+    }
+
+    {% endif %}
+
+})
+
+const onImage = (e) => {
+    const visualizerImage = document.getElementById("image-upload")
+    const image = e.target.files[0]
+    if (!image) { {% if product_modify.image %}
+        visualizerImage.src = "/media/{{product_modify.image}}"  
+    {% endif %}
+        visualizerImage.style.display = 'none'
+        visualizerImage.src = ''
+    }
+    visualizerImage.style.display = 'flex'
+    visualizerImage.src = URL.createObjectURL(image)
+}
+
+document.getElementById("id_image").addEventListener("change", onImage)
+</script>
+{%endblock content%}

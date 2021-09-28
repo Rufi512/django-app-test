@@ -1,0 +1,129 @@
+{%extends 'index.html'%}
+{%block extra_head%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<style>
+    .no-results{
+            display: flex;
+       justify-content: center;
+        align-items: center;
+      flex-direction: column;
+    }
+</style>
+{%endblock extra_head%}
+{%block content%}
+{%csrf_token%}
+<div style="margin-top: 20px;" class="container-fluid">
+    <div id="items-all" style="justify-content: space-around;" class="row">
+    </div>
+</div>
+<div id="modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Question Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="name-item"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onClick="hiddenModal()" data-bs-dismiss="modal">Close</button>
+                <button onClick="deleteImage()" type="button" class="btn btn-danger">Yeah sure! erase</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.modal {
+    visibility: hidden;
+    display: block;
+    background: #0808083b;
+    transition: all 0.3s ease;
+}
+</style>
+<script>
+var modal = document.getElementById('modal')
+var product_to_delete = null
+var nameProduct = document.getElementById("name-item")
+const viewList = document.getElementById("items-all")
+var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+const Nothing = () => {
+    alert("I have lied")
+}
+
+const Erase = (id, name) => {
+    product_to_delete = id
+    nameProduct.innerHTML = `Are you sure to delete: <span style="font-weight:bold">${name}</span>?`
+    modal.style.visibility = "visible"
+}
+
+const hiddenModal = () => {
+    modal.style.visibility = "hidden"
+    setTimeout(() => {
+        nameProduct.innerHTML = ''
+        product_to_delete = null
+    }, 300)
+
+}
+
+const modify = (id) => {
+    window.location.href = `/modify/product/${id}`
+}
+
+
+const getData = async () => {
+    const res = await fetch('/api/products', {
+        method: 'GET'
+    })
+
+    if (res.status === 200) {
+        const data = await res.json()
+        viewList.innerHTML = ''
+        if (data.length < 1) {
+            return (viewList.innerHTML = `<div class="no-results"><img src="https://img.icons8.com/color/48/000000/search--v1.png"/ alt="Magnifying glass"> <h2>Nothing here :(</h2><p>Try at least to upload something dude</p></div>`)
+        }
+
+        data.map((el) => {
+            return (
+                viewList.innerHTML += `<div class="animate__animated animate__fadeIn p-4" style="width:auto;">
+            <div class="card" style="width: 18rem;">
+                <img src="${el.image}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">${el.title}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">$ ${el.price}</h6>
+                    <p class="card-text">${el.description}</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn ${el.avalaible ? 'btn-primary' : 'btn-secondary'}" onClick="Nothing()"  ${el.avalaible ? '' : 'disabled'}>Buy</button>
+                         <button onClick="modify(${el.id})" class="btn btn-primary" type="button">Modify</button>
+                        <button onClick="Erase(${el.id}, '${el.title}')" class="btn btn-danger" type="button">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>`)
+        })
+        return
+    }
+
+}
+
+const deleteImage = async () => {
+
+    try {
+        await fetch(`/api/products/${product_to_delete}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': csrfToken }
+
+        })
+        alert("Product Delete!")
+        hiddenModal();
+        getData();
+    } catch (e) { console.log(e) }
+
+}
+
+window.addEventListener("load", () => {
+    getData()
+})
+</script>
+{%endblock content%}
