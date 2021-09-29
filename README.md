@@ -16,12 +16,16 @@ This is a little test using django
 	
 	`pip install requirements.txt`
 
-+ Create an .env in the root of the project that must contain:
++ Inside in the folder src create an .env that must contain:
 SECRET_KEY and DEBUG_STATE
 
-+ Do the migrations inside in the folder src
++ Do the migrations
 `python manage.py makemigrations`
 `python manage.py migrate`
 
 + And start
 `python manage.py runserver`
+
+
++ If the database didn't work for some reason, try this:
+`python manage.py migrate --run-syncdb`
