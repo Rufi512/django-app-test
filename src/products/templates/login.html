@@ -246,6 +246,8 @@ form .button-register:hover{
         body:JSON.stringify(data)
        })
 
+       inForm = false
+
        let response = await res.json()
        
        {%if type == 'login'%}
@@ -276,7 +278,6 @@ form .button-register:hover{
        {%endif%}
 
 
-       inForm = false
 
 
 

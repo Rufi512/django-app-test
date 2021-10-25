@@ -139,8 +139,6 @@ const hiddenModal = () => {
     }, 300)
 
 }
-console.log('{{user.is_staff}}')
-
 
 const modify = (id) => {
     window.location.href = `/modify/product/${id}`
@@ -155,8 +153,6 @@ const getData = async (position) => {
 
     if (res.status === 200) {
         const data = await res.json()
-        console.log(data)
-        //viewList.innerHTML = ''
         if (data.results.length < 1) {
             return (viewList.innerHTML = `<div class="no-results"><img src="https://img.icons8.com/color/48/000000/search--v1.png"/ alt="Magnifying glass"> <h2>Nothing here :(</h2><p>Try at least to upload something dude</p></div>`)
         }
@@ -205,15 +201,13 @@ const deleteImage = async () => {
             headers:{
             "Authorization":`Bearer ${localStorage.getItem("access")}`
             }
-            //headers: { 'X-CSRFToken': csrfToken }
-
         })
         const response = await res.json()
         if(res.status >= 400){
             showModalGlobal(response.detail)
-            /*setTimeout(()=<{
+            setTimeout(()=>{
                 window.location.href = "/logout"
-            },3000)*/
+            },2000)
             return
         }
         showModalGlobal("Product Delete!")

@@ -196,7 +196,6 @@ window.addEventListener("load", () => {
         }
     })
 
-    console.log("{{product_modify.title}}")
     {% if product_modify %}
     const preview_image = document.getElementById("image-upload")
     const imageProduct = {%if product_modify.image%}"/media/{{product_modify.image}}"{%else%} null {%endif%}
@@ -253,13 +252,10 @@ document.getElementById("form_product").addEventListener('submit',async (e)=>{
      const res = await fetch({% if product_modify %}'/api/products/{{product_modify.id}}/'{%else%}'/api/products/'{%endif%},{
         method:{% if product_modify %}'PUT'{%else%}'POST'{%endif%},
         headers:{
-            //"Content-Type":"multipart/form-data",
             "Authorization":`Bearer ${localStorage.getItem("access")}`
         },
         body:formData
      })
-
-     console.log(res)
 
      if(res.status >= 500){
         inForm = false
@@ -279,8 +275,6 @@ document.getElementById("form_product").addEventListener('submit',async (e)=>{
      window.location.href = '/'
      inForm = false
 
-
-     
 })
 
 const onImage = (e,hidden) => {
