@@ -1,12 +1,85 @@
 {%extends 'index.html'%}
+{%load static%}
 {%block extra_head%}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 <style>
     .no-results{
-            display: flex;
+        display: flex;
        justify-content: center;
         align-items: center;
       flex-direction: column;
+    }
+
+    .card{
+        box-shadow: 0px 2px 11px 4px #e6e6e7;
+    }
+
+    #items-all{
+        margin: auto;
+        max-width: 1400px;
+    }
+
+    .card-text{
+        height: auto;
+    }
+
+    #items-all .info-head{
+        display: flex;
+        flex-flow: wrap;
+        justify-content: space-between; 
+        margin:8px 0;
+    }
+
+    #items-all .info-head h6{
+        margin: 0;
+    }
+
+    .card img{
+        height: 265px;
+        object-fit: cover;
+        object-position: top;
+    }
+
+    .loader{
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        padding: 20px 0;
+        opacity: 0;
+        transform: translateY(50px);
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .loader-show{
+        opacity: 1 !important;
+        transform: translateY(0px) !important;
+        visibility: visible !important;
+    }
+
+    .loader i{
+        font-size: 1.5em;
+        animation: rotate 0.8s infinite linear;
+    }
+
+    @keyframes rotate{
+        from{
+            transform: rotate(0deg);
+        }
+        to{
+            transform: rotate(360deg);
+        }
+    }
+
+    @media(min-width: 600px){
+        .card-text{
+            height: 121px;
+        }
+
+        .card img{
+            height: 295px;
+        }
+
     }
 </style>
 {%endblock extra_head%}
@@ -15,6 +88,7 @@
 <div style="margin-top: 20px;" class="container-fluid">
     <div id="items-all" style="justify-content: space-around;" class="row">
     </div>
+    <div id="loader" class="loader .loader-show"><i class="fas fa-spinner"></i></div>
 </div>
 <div id="modal" class="modal" tabindex="-1">
     <div class="modal-dialog">
@@ -33,28 +107,27 @@
         </div>
     </div>
 </div>
-<style>
-.modal {
-    visibility: hidden;
-    display: block;
-    background: #0808083b;
-    transition: all 0.3s ease;
-}
-</style>
+
+{%endblock content%}
+
+{%block extra_js%}
 <script>
 var modal = document.getElementById('modal')
 var product_to_delete = null
 var nameProduct = document.getElementById("name-item")
+var nextPage = null
+var scrollLoad = false
 const viewList = document.getElementById("items-all")
-var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+const loader = document.getElementById("loader")
 
 const Nothing = () => {
     alert("I have lied")
 }
 
-const Erase = (id, name) => {
-    product_to_delete = id
-    nameProduct.innerHTML = `Are you sure to delete: <span style="font-weight:bold">${name}</span>?`
+
+const Erase = (id, title, index) => {
+    product_to_delete = {id, title, index}
+    nameProduct.innerHTML = `Are you sure to delete: <span style="font-weight:bold">${title}</span>?`
     modal.style.visibility = "visible"
 }
 
@@ -66,43 +139,60 @@ const hiddenModal = () => {
     }, 300)
 
 }
+console.log('{{user.is_staff}}')
+
 
 const modify = (id) => {
     window.location.href = `/modify/product/${id}`
 }
 
 
-const getData = async () => {
-    const res = await fetch('/api/products', {
+const getData = async (position) => {
+    const res = await fetch(position, {
         method: 'GET'
     })
 
+
     if (res.status === 200) {
         const data = await res.json()
-        viewList.innerHTML = ''
-        if (data.length < 1) {
+        console.log(data)
+        //viewList.innerHTML = ''
+        if (data.results.length < 1) {
             return (viewList.innerHTML = `<div class="no-results"><img src="https://img.icons8.com/color/48/000000/search--v1.png"/ alt="Magnifying glass"> <h2>Nothing here :(</h2><p>Try at least to upload something dude</p></div>`)
         }
 
-        data.map((el) => {
+        if(data.next){
+            nextPage = data.next
+            scrollLoad = false
+        }
+
+        let delay = 0
+
+        data.results.map((el,i) => {
             return (
-                viewList.innerHTML += `<div class="animate__animated animate__fadeIn p-4" style="width:auto;">
-            <div class="card" style="width: 18rem;">
-                <img src="${el.image}" class="card-img-top" alt="...">
+                viewList.innerHTML += `<div id="${el.title}-${i}" class="animate__animated animate__fadeIn" style="width:auto; padding:0; animation-delay:${delay+=50}ms;">
+            <div class="card" style="width: 18rem; margin:15px 0;">
+                <img src="${el.image}" class="card-img-top" alt="${el.title}" loading="lazy" onerror="this.onerror=null;this.src='{%static '/img/pexels-emirkhan-bal-953864.jpg'%}'">
                 <div class="card-body">
                     <h5 class="card-title">${el.title}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">$ ${el.price}</h6>
+                    <div class="info-head"><h6 style="font-weight:bold;"class="card-subtitle mb-2 text-muted">${el.seller.username}</h6><h6 class="card-subtitle mb-2 text-muted">$ ${el.price}</h6></div>
+                    
                     <p class="card-text">${el.description}</p>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button class="btn ${el.avalaible ? 'btn-primary' : 'btn-secondary'}" onClick="Nothing()"  ${el.avalaible ? '' : 'disabled'}>Buy</button>
+
+                         ${el.seller.username == '{{user.username}}' || '{{user.is_staff}}' === 'True' ? `
                          <button onClick="modify(${el.id})" class="btn btn-primary" type="button">Modify</button>
-                        <button onClick="Erase(${el.id}, '${el.title}')" class="btn btn-danger" type="button">Delete</button>
+                         <button onClick="Erase(${el.id}, '${el.title}', '${i}')" class="btn btn-danger" type="button">Delete</button>` : ''}
+                        
                     </div>
                 </div>
             </div>
         </div>`)
         })
-        return
+
+        loader.classList.remove('loader-show')
+        
     }
 
 }
@@ -110,20 +200,44 @@ const getData = async () => {
 const deleteImage = async () => {
 
     try {
-        await fetch(`/api/products/${product_to_delete}/`, {
+        const res = await fetch(`/api/products/${product_to_delete.id}/`, {
             method: 'DELETE',
-            headers: { 'X-CSRFToken': csrfToken }
+            headers:{
+            "Authorization":`Bearer ${localStorage.getItem("access")}`
+            }
+            //headers: { 'X-CSRFToken': csrfToken }
 
         })
-        alert("Product Delete!")
+        const response = await res.json()
+        if(res.status >= 400){
+            showModalGlobal(response.detail)
+            /*setTimeout(()=<{
+                window.location.href = "/logout"
+            },3000)*/
+            return
+        }
+        showModalGlobal("Product Delete!")
+        const element = document.getElementById(`${product_to_delete.title}-${product_to_delete.index}`)
+        element.remove()
         hiddenModal();
-        getData();
     } catch (e) { console.log(e) }
 
 }
 
 window.addEventListener("load", () => {
-    getData()
+    getData('/api/products')
+})
+
+window.addEventListener("scroll",(e)=>{
+    let windowScroll = document.body.offsetHeight - window.innerHeight
+    let scrollUser = windowScroll - e.target.scrollingElement.scrollTop
+    if(scrollUser <= 50 && scrollLoad === false && nextPage){
+        scrollLoad = true
+        loader.classList.add('loader-show')
+        getData(nextPage)
+    }
 })
 </script>
-{%endblock content%}
+
+
+{%endblock extra_js%}

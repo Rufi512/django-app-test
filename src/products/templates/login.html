@@ -1,0 +1,286 @@
+{% extends 'index.html' %}
+{%load static%}
+{%block extra_head%}
+<style>
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header{
+    padding: 0px 15px;
+}
+
+form h2{
+    margin-top: 10px;
+    margin-bottom: 7px;
+    font-weight: bold;
+    text-align: center;
+}
+
+form h3{
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+form input{
+    all: unset;
+}
+
+form img{
+    width: 100%;
+    max-width: 768px;
+    height: 305px;
+    object-fit: cover;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.content-form{
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.field{
+	position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-end;
+    max-width: 240px;
+    margin: 10px 5px;
+}
+
+.field .fas{
+	position: absolute;
+	padding-left: 15px;
+}
+
+.inputs-field{
+border: 1px solid #b5b5b5;
+padding: 5px 0;
+margin-left: 5px;
+padding-left: 35px;
+transition: all 0.3s ease;
+}
+
+
+.inputs-field:focus{
+	border-color: #d06262;
+}
+
+form .button-register{
+	margin-top: 10px;
+	width: 240px;
+    font-size: 1em;
+    border: none;
+    background: #e42537;
+    color: #fbfbfb;
+    font-weight: bold;
+    padding: 7px;
+    border-radius: 27px;
+    transition: all 0.3s ease;
+}
+
+form .button-register:hover{
+	background: #ce192a;
+}
+
+.container-fluid{
+	padding: 0;
+}
+
+.container-form{
+    margin: 10px;
+    box-shadow: 0px 5px 4px 2px #d0d8e1;
+    border-radius: 5px;
+}
+
+@media (min-width: 600px){
+ form img{
+    height: 330px;
+
+ }
+}
+
+@media (min-width: 768px){
+    .container-form{
+        height: 100vh;
+        display: flex;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    form{
+        display: flex;
+        width: 90%;
+        margin: auto;
+        box-shadow: 0px 4px 14px 7px #d8d8d8;
+        height: 385px;
+        border-radius: 5px;
+        flex-direction: row;
+        overflow: hidden;
+        max-width: 1000px;
+    }
+
+    form img{
+        width: 100%;
+        max-width: 500px;
+        height: 390px;
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 0px;
+    }
+
+    .content-form{
+        height: 340px;
+        width: 100%;
+        align-items: center;
+        justify-content: space-around;
+        display: flex;
+        flex-direction: column;
+   }
+
+   .container-fields{
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        grid-template-rows: 1fr;
+        width: 95%;
+        grid-template-areas: 
+        "username email"
+        "password password-confirm";
+   }
+
+   .container-fields .inputs-field{
+        width: 100%;
+   }
+
+   .container-fields .field{
+        width: auto;
+   }
+
+   .username{
+        grid-area: username;
+   }
+
+   .email{
+        grid-area: email;
+   }
+
+   .password{
+        grid-area: password;
+   }
+
+   .password-confirm{
+        grid-area: password-confirm;
+   }
+
+}
+
+
+</style>
+{%endblock extra_head%}
+{%block content%}
+<div class="container-form">
+    <form action="{%if type == 'login'%}/login/ {%endif%}" method="POST" id="form">
+        {%csrf_token%}
+        <img width="412px" height="390" src="{%if type == 'login' %} {%static '/img/pexels-burst-374894.jpg'%} {%else%} {%static '/img/pexels-emirkhan-bal-953864.jpg'%} {%endif%}"alt="presentation">
+        <div class="content-form">
+        <h2>{%if type == 'login' %}Welcome to back strange! {%else%} Welcome strange {%endif%}</h2>
+        <h3>Please send the information to continue</h3>
+        {%if type == 'login' %}
+        <div class="field"><input class="inputs-field" id="email" name="email" type="email" placeholder="Email" /><i class="fas fa-envelope"></i></div>
+        <div class="field"><input class="inputs-field" id="password" name="password" type="password" placeholder="Password" /><i class="fas fa-lock"></i></div>
+        {%else%}
+        <div class="container-fields">
+        <div class="field username"><input class="inputs-field" id="user" type="text" name="username" placeholder="Username" /><i class="fas fa-user"></i></div>
+        <div class="field email"><input class="inputs-field" id="email" type="email" name="email" placeholder="Your email" /><i class="fas fa-envelope"></i></div>
+        <div class="field password"><input class="inputs-field" id="password" type="text" name="password" placeholder="Password" /><i class="fas fa-lock"></i></div>
+        <div class="field password-confirm"><input class="inputs-field" id="password-confirm" name="password-confirm" type="password" placeholder="Confirm password" /><i class="fas fa-lock"></i></div>
+        </div>
+        {%endif%}
+        <button class="button-register">{%if type == 'login'%} Login {%else%} Register {%endif%}</button>
+        {%if type == 'login'%}
+        <p style="margin-top: 15px;">You are new strange? <a href="/register">Sign up!</a></p>
+        {%endif%}
+        {%if type == 'register'%}
+        <p style="margin-top: 15px;">Do I know you strange? <a href="/login">Login up!</a></p>
+        {%endif%}
+        </div>
+    </form>
+</div>
+{%endblock content%}
+{%block extra_js%}
+<script>
+    const form = document.getElementById("form")
+    let inForm = false
+    form.addEventListener("submit", async (e)=>{
+        e.preventDefault()
+        if(inForm) return
+        inForm = true
+        let data = {}
+        Array.from(e.target.elements).forEach((el)=>{
+            if(el.name){
+               {% if type == 'register' %} if(el.name == "password" || el.name == "password-confirm" || el.name == "csrfmiddlewaretoken") return{%endif%}
+                    data[el.name] = el.value
+            }
+        })
+       {% if type == 'register' %}
+       if(form['password'].value === form['password-confirm'].value){
+        data["password"] = form['password'].value
+       }else{
+        showModalGlobal("passwords invalid!")
+        return
+       }
+       {%endif%}
+
+       const res = await fetch({%if type == 'login'%}'/api/token/'{%else%}'/api/customers/'{%endif%},{
+        headers:{'Content-Type':'application/json'},
+        method:'POST',
+        body:JSON.stringify(data)
+       })
+
+       let response = await res.json()
+       
+       {%if type == 'login'%}
+       
+       if(res.status === 200){
+        localStorage.setItem('access',response.access)
+        localStorage.setItem('refresh',response.refresh)
+        form.submit()
+       }
+
+       if(res.status != 200 && res.status < 500){
+        showModalGlobal('Invalid credentials')
+       }
+
+       {%else%}
+
+       if(res.status >= 400){
+        let errors = ''
+        for(error in response){
+            errors += `<b style="text-transform:capitalize;">${error}</b>: ${response[error][0]} <br/>`
+        }
+        if(errors && !response.detail){
+            showModalGlobal(errors)
+            return
+        }
+         showModalGlobal(response.detail)
+        }
+       {%endif%}
+
+
+       inForm = false
+
+
+
+
+    })
+</script>
+    {%endblock extra_js%}

@@ -1,4 +1,5 @@
 {%extends 'index.html'%}
+{%load static%}
 {%block extra_head%}
 <style>
     .col-md-6 .form-label{width: 100%;
@@ -9,6 +10,117 @@
     padding: 2px 5px;
     font-weight: 700;
 }
+    .preview-image{
+        display: none;
+        position: relative;
+        margin: auto;
+    }
+
+    .preview-image img{
+        height: 295px;
+    object-fit: cover;
+    object-position: top;
+    }
+
+    .preview-image div{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #00000061;
+    opacity: 0;
+    transition: all 0.3s ease;
+    }
+
+    .preview-image:hover div{
+        opacity: 1;
+    }
+
+    .preview-image div button{
+         color: white;
+    font-weight: 600;
+    width: 115px;
+    height: 42px;
+    margin: 40px 0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 11px;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    }
+
+    .preview-image div button:first-child{
+        background: #1565c0b3;
+    }
+
+    .preview-image div button:first-child:hover{
+        background: #1565c0;
+    }
+
+    .preview-image div button:last-child{
+        background: #c11717bd;
+    }
+
+    .preview-image div button:last-child:hover{
+        background: #c11717;
+    }
+
+    .preview-image div button i{
+        font-size: 15px;
+    }
+
+    @media(max-width: 1024px){
+        .preview-image{
+            flex-direction: column;
+        }
+
+        .preview-image img{
+            margin: auto;
+            height: auto;
+            max-height: 295px;
+        }
+
+        .preview-image div{
+            position: relative;
+            margin-top: 20px;
+            flex-direction: row;
+            flex-flow: wrap;
+            background: none;
+            opacity: 1;
+            cursor: default;
+        }
+
+        .preview-image div button{
+            margin: 15px 20px;
+        }
+
+        .preview-image div button:first-child{
+            background: #2572c9;
+        }
+
+        .preview-image div button:last-child{
+            background: #d92a2a;
+        }
+
+        .preview-image div button:first-child:hover{
+            background: #1565c0;
+        }
+
+        .preview-image div button:last-child:hover{
+            background: #c11717;
+        }
+
+
+
+    }
+
 </style>
 {%endblock extra_head%}
 {%block content%}
@@ -33,19 +145,26 @@
         <div class="col-md-12" style="margin: auto;">
             <div class="row">
                 <div class="col-md-6 p-4">
-                    <label for="id_image" style="display:flex; flex-direction: column; cursor:pointer"><span class="form-label">Image from upload</span>
-                        <img id="image-upload" style="width:270px; display: none; margin:auto; box-shadow: 0px 5px 8px 5px #e6e6e6f5;" src="" alt="image-to-upload">
-                    </label>
+                    <div style="display:flex; flex-direction: column;"><span class="form-label">Image from upload</span>
+                        <div class="preview-image" >
+                        <img id="image-upload" style="width:270px; object-fit: cover; box-shadow: 0px 5px 8px 5px #e6e6e6f5;" src="" alt="image-to-upload">
+                        <div><button type="button" onclick="changeImage(true)">Change Image
+                        <i class="fas fa-file-import"></i></button>
+                        <button type="button" onclick="changeImage(false)">Delete Image
+                        <i class="fas fa-trash"></i></button></div>
+                        </div>
+                    </div>
                     {{form.image}}
                 </div>
                 <div class="col-md-6 p-4">
                     <label for="id_description" class="form-label">Description Product</label>
                     {{form.description}}
+                    <p style="display: flex; justify-content: end;"><span id="words_length">0</span>/160</p>
                 </div>
             </div>
         </div>
         <div class="col-md-12" style="display: flex; justify-content: space-around;">
-            <div class="form-check">
+            <div class="form-check form-switch">
                 {{form.avalaible}}
                 <label class="form-check-label" for="id_avalaible" class="form-label">Avalaible to sell?</label>
             </div>
@@ -56,10 +175,16 @@
     </div>
 </form>
 <script>
+var deleteImage = false
 window.addEventListener("load", () => {
-
+    const containerImage = document.querySelector('.preview-image')
     const form = document.getElementById("form_product").querySelectorAll("input, textarea")
-
+    const words_length = document.getElementById("words_length")
+    const description_field = document.getElementById("id_description")
+    description_field.addEventListener("input",(e)=>{
+        const count = e.target.value.length
+        words_length.innerHTML = count
+    })
 
     Array.from(form).forEach((el) => {
         if (el.type == 'textarea' || el.type == 'text' || el.type == 'number' || el.type == 'file') {
@@ -71,16 +196,20 @@ window.addEventListener("load", () => {
         }
     })
 
+    console.log("{{product_modify.title}}")
     {% if product_modify %}
     const preview_image = document.getElementById("image-upload")
-    const imageProduct = "{{product_modify.image}}"
+    const imageProduct = {%if product_modify.image%}"/media/{{product_modify.image}}"{%else%} null {%endif%}
     const avalaible = "{{product_modify.avalaible}}"
     document.getElementById("id_title").value = "{{product_modify.title}}"
     document.getElementById("id_price").value = "{{product_modify.price}}"
-    document.getElementById("id_description").value = "{{product_modify.description}}"
+    document.getElementById("id_description").value = `{{product_modify.description}}`
+    words_length.innerHTML = `{{product_modify.description}}`.length
     if (imageProduct) {
-        preview_image.style.display = 'flex'
-        preview_image.src = "/media/{{product_modify.image}}"
+        const inputImage = document.getElementById("id_image")
+        containerImage.style.display = 'flex'
+        preview_image.src = imageProduct
+        inputImage.style.display = 'none'
     }
     if (avalaible !== "False") {
         document.getElementById("id_avalaible").checked = true
@@ -90,17 +219,104 @@ window.addEventListener("load", () => {
 
 })
 
-const onImage = (e) => {
+let inForm = false
+document.getElementById("form_product").addEventListener('submit',async (e)=>{
+    e.preventDefault()
+    var formData = new FormData()
+    if(inForm) return
+    inForm = true
+    
+     Array.from(e.target.elements).forEach((el)=>{
+            if(el.name){
+                if(el.name === 'image' && el.files[0]){
+                    formData.append(el.name,el.files[0])
+                    return
+                }
+
+                if(el.name === 'avalaible' && el.checked){
+                        formData.append(el.name, "true")
+                        return
+                }
+
+                formData.append(el.name, el.value)
+
+
+            }
+        })
+
+      {% if product_modify %}
+      if(deleteImage){
+        formData.append('delete_image', "true")
+      }
+      {%endif%}
+
+     const res = await fetch({% if product_modify %}'/api/products/{{product_modify.id}}/'{%else%}'/api/products/'{%endif%},{
+        method:{% if product_modify %}'PUT'{%else%}'POST'{%endif%},
+        headers:{
+            //"Content-Type":"multipart/form-data",
+            "Authorization":`Bearer ${localStorage.getItem("access")}`
+        },
+        body:formData
+     })
+
+     console.log(res)
+
+     if(res.status >= 500){
+        inForm = false
+     }
+
+     const response = await res.json()
+
+     if(res.status >= 400){
+        showModalGlobal(response.detail)
+        inForm = false
+        window.location.href = '/logout'
+        return
+
+     }
+
+     showModalGlobal(response.message)
+     window.location.href = '/'
+     inForm = false
+
+
+     
+})
+
+const onImage = (e,hidden) => {
+    const containerImage = document.querySelector('.preview-image')
     const visualizerImage = document.getElementById("image-upload")
-    const image = e.target.files[0]
-    if (!image) { {% if product_modify.image %}
-        visualizerImage.src = "/media/{{product_modify.image}}"  
-    {% endif %}
-        visualizerImage.style.display = 'none'
+    const inputImage = document.getElementById("id_image")
+
+    if(hidden){
+        containerImage.style.display = 'none'
         visualizerImage.src = ''
+        inputImage.style.display = 'block'
+        return
     }
-    visualizerImage.style.display = 'flex'
+    const image = e.target.files[0]
+    if (!image) { 
+         visualizerImage.src = ''
+        {% if product_modify.image %}
+        if (deleteImage) return
+        visualizerImage.src = "/media/{{product_modify.image}}"  
+        {% endif %}
+        containerImage.style.display = 'none'
+        inputImage.style.display = 'block'
+        return
+    }
+    deleteImage = false
+    containerImage.style.display = 'flex'
+    inputImage.style.display = 'none'
     visualizerImage.src = URL.createObjectURL(image)
+}
+
+const changeImage = (value) =>{
+    const inputFile = document.getElementById("id_image")
+    if(value) return inputFile.click()
+        inputFile.value = ""
+        onImage(null,true)
+        deleteImage = true
 }
 
 document.getElementById("id_image").addEventListener("change", onImage)
