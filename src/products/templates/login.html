@@ -235,7 +235,8 @@ form .button-register:hover{
        if(form['password'].value === form['password-confirm'].value){
         data["password"] = form['password'].value
        }else{
-        showModalGlobal("passwords invalid!")
+        inForm = false
+        showModalGlobal("Passwords invalid!")
         return
        }
        {%endif%}
@@ -263,6 +264,13 @@ form .button-register:hover{
        }
 
        {%else%}
+
+       if(response){
+        showModalGlobal('Successful user registration!')
+        setTimeout(()=>{
+            window.location.href = '/login'
+        },2000)
+       }
 
        if(res.status >= 400){
         let errors = ''

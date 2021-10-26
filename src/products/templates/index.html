@@ -59,7 +59,8 @@
             visibility: hidden;
             display: block;
             background: #0808083b;
-            transition: all 0.3s ease;
+            opacity: 0;
+            transition: all 0.2s ease;
         }
 
 
@@ -148,6 +149,7 @@
         var itemModalGlobal = document.getElementById("modal-global-item")
         const hiddenModalGlobal = () =>{
             modalGlobal.style.visibility = "hidden"
+            modalGlobal.style.opacity = '0'
             setTimeout(() => {
                 itemModalGlobal.innerHTML = ''
             }, 300)
@@ -156,6 +158,7 @@
         const showModalGlobal = (value) =>{
             itemModalGlobal.innerHTML = value
             modalGlobal.style.visibility = "visible"
+            modalGlobal.style.opacity = '1'
         }
 
         const logout = () =>{
