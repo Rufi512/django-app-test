@@ -14,4 +14,12 @@ class Product(models.Model):
 	def __str__(self):
 		return self.title
 
+class Categories(models.Model):
+	title = models.CharField(max_length=40)
+	description = models.TextField(blank=False, null=False,max_length=160)
+	image = models.ImageField(upload_to='images/', blank=True, null=True, default='static/img/pexels-wendy-wei-1190297.jpg')
+
+	def __str__(self):
+		return self.title
+
 

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 from .forms import ProductForm
-from .models import Product
+from .models import Product, Categories
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
@@ -10,7 +10,7 @@ from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS, BasePermission,IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, CategoriesSerializer
 
 # Create your views here.
 
@@ -86,13 +86,23 @@ class ProductViewSet(viewsets.ModelViewSet):
 		self.get_object().delete()
 		return Response("Product Delete")
 
+
+#Render productView
+
+class CategoriesViewSet(viewsets.ModelViewSet):
+	serializer_class = ProductSerializer
+	def get_queryset(self):
+		categories = Categories.objects.all()
+		return categories
+
 #Render views
 
 
 def home_view(request,*args, **kwargs):
 	context ={
 	"user":request.user,
-	"products": Product.objects.all()
+	"products": Product.objects.all(),
+	"categories": Categories.objects.all()
 	}
 	return render(request,"home.html",context)
 

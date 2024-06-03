@@ -18,7 +18,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LogoutView
-from products.views import (ProductViewSet,home_view,contact_view, upload_view,modify_view)
+from products.views import (ProductViewSet,CategoriesViewSet,home_view,contact_view, upload_view,modify_view)
 from clients.views import (Customer,login_view,logout,register_view,MyTokenObtainPairView)
 
 #REST
@@ -27,11 +27,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-
+#routes api rest
 router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet, basename="products")
 router.register(r'customers', Customer, basename="customers")
-
+router.register(r'categories', CategoriesViewSet, basename="categories")
 urlpatterns = [
     path('',home_view, name="home"),
     path('upload/', upload_view, name="upload"),

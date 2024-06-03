@@ -2,7 +2,65 @@
 {%load static%}
 {%block extra_head%}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<!-- CSS flickity -->
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<!-- JavaScript flickity -->
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+
 <style>
+    .section-general{
+        position: relative;
+        background: white;
+        border-radius: 6px;
+        padding:20px;
+        box-shadow: 1px 2px 0px #9d9c9c33;
+        overflow: hidden;
+    }
+
+    .banner-image{
+        width:100%;
+        height:320px;
+        object-fit:cover;
+    }
+
+    .section-general::after,
+    .section-general::before{
+        content: "";
+        position: absolute;
+        right: -5px;
+        top: -5px;
+        border-radius: 3px;
+        background: #131e51;
+        width: 24px;
+        height: 24px;
+
+    }
+
+
+    .section-general .title-section{
+            padding: 0 0px;
+            font-size: 22px;
+            color: #131e51;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #374177;
+    }
+
+    .section-general .card-price{
+            color: #047f04;
+            font-size: 22px;
+            font-weight: 600;
+    }
+
+    .section-carousel{
+        padding:0;
+    }
+
+    .section-carousel::after,
+    .section-carousel::before{
+        display:none;
+    }
+
     .no-results{
         display: flex;
        justify-content: center;
@@ -11,7 +69,37 @@
     }
 
     .card{
-        box-shadow: 0px 2px 11px 4px #e6e6e7;
+        max-width:235px;
+        box-shadow: 0px 2px 11px 4px #e1e1e1;
+        color:black;
+        text-decoration: none;
+    }
+
+    .card .card-title{
+        font-weight:600;
+        transition:all 0.3s ease;
+        font-size: 18px;
+        color: #131e51;
+        font-weight: 600;
+    }
+
+    .card:hover .card-title{
+        color:#252e59;
+    }
+
+    .card p{
+        font-size:16px;
+        color:#333333;
+    }
+
+    .card .card-img-top{
+        height: 235px;
+        padding: 20px;
+        object-fit: cover;
+    }
+
+    .container-categories{
+        align-items: stretch;
     }
 
     #items-all{
@@ -32,12 +120,6 @@
 
     #items-all .info-head h6{
         margin: 0;
-    }
-
-    .card img{
-        height: 265px;
-        object-fit: cover;
-        object-position: top;
     }
 
     .loader{
@@ -62,6 +144,38 @@
         animation: rotate 0.8s infinite linear;
     }
 
+    .section-products .card{
+        box-shadow:none;
+        background-color: transparent;
+    }
+
+    /* position dots in carousel */
+    .flickity-page-dots {
+        bottom: 0px;
+    }
+
+    /* white circles */
+    .flickity-page-dots .dot {
+        width: 12px;
+        height: 12px;
+        opacity: 1;
+        background: transparent;
+        border: 2px solid white;
+        }
+/* fill-in selected dot */
+.flickity-page-dots .dot.is-selected {
+  background: white;
+}
+
+.carousel-cell {
+  width: 100%;
+  height: 320px;
+  margin-right: 10px;
+  background: #8C8;
+  border-radius: 5px;
+  counter-increment: gallery-cell;
+}
+
     @keyframes rotate{
         from{
             transform: rotate(0deg);
@@ -71,42 +185,69 @@
         }
     }
 
-    @media(min-width: 600px){
-        .card-text{
-            height: 121px;
-        }
 
-        .card img{
-            height: 295px;
-        }
-
-    }
 </style>
 {%endblock extra_head%}
 {%block content%}
 {%csrf_token%}
-<div style="margin-top: 20px;" class="container-fluid">
-    <div id="items-all" style="justify-content: space-around;" class="row">
+
+<!-- Section banners -->
+<section style="margin-top: 20px;" class="container-fluid">
+    <div class="section-carousel section-general carousel" data-flickity>
+
+                <a class="carousel-cell banner" href="#">
+                      <img class="banner-image" src="/static/img/1.jpg" alt="Card image cap">
+                    </a>
+
+                 <a class="carousel-cell banner" href="#">
+                      <img class="banner-image" src="/static/img/2.jpg" alt="Card image cap">
+                    </a>
+
+                <a class="carousel-cell banner" href="#">
+                      <img class="banner-image" src="/static/img/3.jpg" alt="Card image cap">
+                    </a>
     </div>
-    <div id="loader" class="loader .loader-show"><i class="fas fa-spinner"></i></div>
-</div>
-<div id="modal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Question Modal</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="name-item"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onClick="hiddenModal()" data-bs-dismiss="modal">Close</button>
-                <button onClick="deleteImage()" type="button" class="btn btn-danger">Yeah sure! erase</button>
-            </div>
+
+</section>
+
+<!-- Section categories products -->
+<section style="margin-top: 20px;" class="container-fluid">
+    <div class="section-categories section-general">
+        <h2 class="title-section">Encuentra lo que necesitas</h2>
+        <div class="d-flex flex-wrap justify-content-center gap-4 col-12 p-3 container-categories">
+            {% for elm in categories %}
+
+                <a class="card" href="#">
+                      <img class="card-img-top" src="/media/{{elm.image}}" alt="Card image cap">
+                      <div class="card-body" >
+                        <h5 class="card-title">{{elm.title}}</h5>
+                        <p class="card-text">{{elm.description}}</p>
+                      </div>
+                    </a>
+            {% endfor %}
         </div>
     </div>
-</div>
+</section>
+
+<!-- Section products -->
+<section style="margin-top: 20px;" class="container-fluid">
+    <div class="section-products section-general">
+        <h2 class="title-section">Lo que tenemos para ti</h2>
+        <div class="d-flex flex-wrap justify-content-center gap-4 col-12 p-3 container-categories">
+            {% for elm in products %}
+
+                <a class="card" href="#">
+                      <img class="card-img-top" src="/media/{{elm.image}}" alt="Card image cap">
+                      <div class="card-body" >
+                        <h5 class="card-title">{{elm.title}}</h5>
+                        <p class="card-text card-price">${{elm.price|floatformat:"0"}}</p>
+                      </div>
+                    </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
 
 {%endblock content%}
 
@@ -145,78 +286,8 @@ const modify = (id) => {
 }
 
 
-const getData = async (position) => {
-    const res = await fetch(position, {
-        method: 'GET'
-    })
 
 
-    if (res.status === 200) {
-        const data = await res.json()
-        if (data.results.length < 1) {
-            return (viewList.innerHTML = `<div class="no-results"><img src="https://img.icons8.com/color/48/000000/search--v1.png"/ alt="Magnifying glass"> <h2>Nothing here :(</h2><p>Try at least to upload something dude</p></div>`)
-        }
-
-        if(data.next){
-            nextPage = data.next
-            scrollLoad = false
-        }
-
-        let delay = 0
-
-        data.results.map((el,i) => {
-            return (
-                viewList.innerHTML += `<div id="${el.title}-${i}" class="animate__animated animate__fadeIn" style="width:auto; padding:0; animation-delay:${delay+=50}ms;">
-            <div class="card" style="width: 18rem; margin:15px 0;">
-                <img src="${el.image}" class="card-img-top" alt="${el.title}" loading="lazy" onerror="this.onerror=null;this.src='{%static '/img/pexels-emirkhan-bal-953864.jpg'%}'">
-                <div class="card-body">
-                    <h5 class="card-title">${el.title}</h5>
-                    <div class="info-head"><h6 style="font-weight:bold;"class="card-subtitle mb-2 text-muted">${el.seller.username}</h6><h6 class="card-subtitle mb-2 text-muted">$ ${el.price}</h6></div>
-                    
-                    <p class="card-text">${el.description}</p>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button class="btn ${el.avalaible ? 'btn-primary' : 'btn-secondary'}" onClick="Nothing()"  ${el.avalaible ? '' : 'disabled'}>Buy</button>
-
-                         ${el.seller.username == '{{user.username}}' || '{{user.is_staff}}' === 'True' ? `
-                         <button onClick="modify(${el.id})" class="btn btn-primary" type="button">Modify</button>
-                         <button onClick="Erase(${el.id}, '${el.title}', '${i}')" class="btn btn-danger" type="button">Delete</button>` : ''}
-                        
-                    </div>
-                </div>
-            </div>
-        </div>`)
-        })
-
-        loader.classList.remove('loader-show')
-        
-    }
-
-}
-
-const deleteImage = async () => {
-
-    try {
-        const res = await fetch(`/api/products/${product_to_delete.id}/`, {
-            method: 'DELETE',
-            headers:{
-            "Authorization":`Bearer ${localStorage.getItem("access")}`
-            }
-        })
-        const response = await res.json()
-        if(res.status >= 400){
-            showModalGlobal(response.detail)
-            setTimeout(()=>{
-                window.location.href = "/logout"
-            },2000)
-            return
-        }
-        showModalGlobal("Product Delete!")
-        const element = document.getElementById(`${product_to_delete.title}-${product_to_delete.index}`)
-        element.remove()
-        hiddenModal();
-    } catch (e) { console.log(e) }
-
-}
 
 window.addEventListener("load", () => {
     getData('/api/products')
