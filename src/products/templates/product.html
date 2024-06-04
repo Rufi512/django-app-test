@@ -1,0 +1,160 @@
+{%extends 'index.html'%}
+{%load static%}
+
+{%block extra_head%}
+<style>
+    .container-product{
+        background: white;
+        border-radius: 10px;
+    }
+
+    .title-product{
+        font-size: 36px;
+    }
+
+    .fa-star{
+        color:#f7c858;
+    }
+
+    .para{
+        font-weight: 600;
+    }
+
+    .subtitle{
+        font-size:20px;
+    }
+
+    .img-product{
+        object-fit: contain;
+    }
+
+    .testimonial-list{
+        padding: 0;
+        list-style: none;
+    }
+</style>
+
+{%endblock extra_head%}
+
+{%block content%}
+{%csrf_token%}
+<div class="container container-product py-4 my-4 mx-auto d-flex flex-column">
+    <div class="header">
+        <div class="d-flex flex-column r1">
+            <div class="col-md-9 abc">
+                <h1 class="title-product">Compresor De Aire 50 Litros 3.2hp Libre De Aceite</h1>
+            </div>
+            <div class="p-1">
+                <div class="col-md-3 text-right pqr"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                <p class="text-right para">Basado en 30 reseñas</p>
+            </div>
+        </div>
+    </div>
+    <div class="container-body mt-1">
+        <div class="row r3">
+            <div class="col-md-5 p-0 klo p-3">
+                <h3 class="subtitle">Caracteristicas del producto</h3>
+                <ul>
+                    <li>100% Quality</li>
+                    <li>Free Shipping</li>
+                    <li>Easy Returns</li>
+                    <li>12 Months Warranty</li>
+                    <li>EMI Starting from (On Credit Cards)</li>
+                    <li>Normal Delivery : 4-5 Days</li>
+                    <li>Express Delivery : 2-3 Days</li>
+                    <li>COD Available (All Over India)</li>
+                </ul>
+                <p>
+                    Posee Doble válvula de salida, con graduados de presión de salida
+, tambien manómetros de presión internos, es fácil de transportar y 4 Mufflers para la reducción considerable del ruido, esta libre de aceite
+                </p>
+
+                <div class="footer d-none flex-column d-md-flex mt-5">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="col-12 "><a class="btn btn-primary col-12 " href="#">ADD TO CART</a></div>
+                        <div class="col-12 "><button type="button" class="btn btn-success col-12 ">BUY NOW</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7"> <img class="img-product" src="https://assetscdn1.paytm.com/images/catalog/product/K/KI/KIDTORADO-MUSCUTORA65799297FD22C/1564571511644_0.jpg" width="90%" height="95%"> </div>
+        </div>
+    </div>
+    <div class="footer d-flex flex-column d-md-none mt-5">
+        <div class="d-flex flex-column gap-3">
+            <div class="col-12 "><a class="btn btn-primary col-12 " href="#">ADD TO CART</a></div>
+            <div class="col-12 "><button type="button" class="btn btn-success col-12 ">BUY NOW</button></div>
+        </div>
+    </div>
+
+    <!-- Reviews product -->
+    <div class="container mt-5">
+
+     <div class="accordion d-flex flex-column justify-content-start align-items-start height" id="accordionExample">
+        <h4 style="font-size:22px;">Reseña de compradores</h4>
+
+
+
+         <div class="row">
+
+             <div class="col-12">
+                 
+               <div class="p-0">
+                 
+
+               
+                 <ul class="testimonial-list d-flex flex-column gap-4">
+                   <li>
+                    
+                      <div class="card p-3" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+
+                        <div class="d-flex flex-row align-items-center gap-3">
+
+                          <img src="https://i.imgur.com/G1pXs7D.jpg" width="50" class="rounded-circle">
+
+                          <div class="d-flex flex-column ml-2">
+
+                            <span style="font-weight:600">Milton Austin</span>
+                            <span>Nuevo comprador</span>
+                            
+                          </div>
+                          
+                        </div>
+
+                        <p class="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis </p>
+                        
+                      </div>   
+                   </li>
+
+                   <li>
+                    <div class="card p-3" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+
+                        <div class="d-flex flex-row align-items-center gap-3">
+
+                          <img src="https://i.imgur.com/udGH5tO.jpg" width="50" class="rounded-circle">
+
+                          <div class="d-flex flex-column ml-2">
+
+                            <span style="font-weight:600">John Reeves</span>
+                            <span>Comprador regular</span>
+                        
+                          </div>
+                          
+                        </div>
+                        <p class="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis </p>
+                      </div> 
+                   </li>
+
+        
+
+                 </ul>
+                 </div>
+             </div>
+
+            
+
+         </div>
+     </div>
+
+ </div>
+</div>
+{%endblock content%}

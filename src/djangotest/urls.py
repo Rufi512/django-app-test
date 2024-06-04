@@ -18,7 +18,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LogoutView
-from products.views import (ProductViewSet,CategoriesViewSet,home_view,contact_view, upload_view,modify_view)
+from products.views import (ProductViewSet,CategoriesViewSet,home_view,contact_view, upload_view,modify_view,product_view, cart_view, checkout_view)
 from clients.views import (Customer,login_view,logout,register_view,MyTokenObtainPairView)
 
 #REST
@@ -35,6 +35,9 @@ router.register(r'categories', CategoriesViewSet, basename="categories")
 urlpatterns = [
     path('',home_view, name="home"),
     path('upload/', upload_view, name="upload"),
+    path('product/', product_view, name="product_detail"),
+    path('cart/', cart_view, name="cart_detail"),
+    path('checkout/', checkout_view, name="checkout_detail"),
     path('modify/product/<int:product_id>', modify_view, name="modify"),
     path('contact/',contact_view, name="contact"),
     path('login/',login_view, name="login"),

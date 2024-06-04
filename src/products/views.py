@@ -146,4 +146,14 @@ def modify_view(request,product_id,*args, **kwargs):
 	return render(request,"upload.html",context)
 
 
+def product_view(request,*args, **kwargs):
+	return render(request,"product.html",{})
+
+def cart_view(request,*args, **kwargs):
+	return render(request,"cart_items.html",{})
+
+def checkout_view(request,*args, **kwargs):
+	return render(request,"checkout.html",{})
+
+
 	
